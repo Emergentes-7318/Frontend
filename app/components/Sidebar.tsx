@@ -4,19 +4,21 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/app/context/AuthContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
     const { user, logout } = useAuth();
+    const { t } = useLanguage();
 
     const sidebarItems = [
-        { label: "Dashboard", path: "/home/dashboard", icon: "pi-home", adminOnly: false },
-        { label: "Documentos", path: "/home/documents", icon: "pi-file", adminOnly: false },
-        { label: "Chats", path: "/home/chats", icon: "pi-comments", adminOnly: false },
-        { label: "Usuarios", path: "/home/users", icon: "pi-users", adminOnly: true },
-        { label: "Configuración", path: "/home/config", icon: "pi-cog", adminOnly: false },
+        { label: t('sidebar.dashboard'), path: "/home/dashboard", icon: "pi-home", adminOnly: false },
+        { label: t('sidebar.documents'), path: "/home/documents", icon: "pi-file", adminOnly: false },
+        { label: t('sidebar.chats'), path: "/home/chats", icon: "pi-comments", adminOnly: false },
+        { label: t('sidebar.users'), path: "/home/users", icon: "pi-users", adminOnly: true },
+        { label: t('sidebar.config'), path: "/home/config", icon: "pi-cog", adminOnly: false },
     ];
 
     const handleLogout = () => {

@@ -1,0 +1,51 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "search": "Search",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "documents": "Documents",
+        "chats": "Chats",
+        "users": "Users",
+        "config": "Settings",
+        "logout": "Logout"
+    },
+    "config": {
+        "title": "Settings",
+        "subtitle": "Manage your account and system preferences",
+        "profileInfo": "Profile Information",
+        "updatePersonalInfo": "Update your personal information",
+        "username": "Username",
+        "email": "Email",
+        "saveChanges": "Save changes",
+        "preferences": "Preferences",
+        "customizeExperience": "Customize your experience",
+        "darkMode": "Dark mode",
+        "darkModeDesc": "Switch between light and dark theme",
+        "language": "Language",
+        "languageDesc": "Select your preferred language",
+        "integrations": "Integrations",
+        "connectServices": "Connect external services",
+        "googleDrive": "Google Drive",
+        "importFromDrive": "Import documents from Drive",
+        "connected": "Connected",
+        "apiKey": "API Key",
+        "externalIntegration": "Integration with external systems",
+        "generate": "Generate",
+        "security": "Security",
+        "changePassword": "Change password",
+        "currentPlan": "Current Plan",
+        "professionalPlan": "Professional Plan",
+        "upgradePlan": "Upgrade plan",
+        "documentsPerMonth": "documents/month",
+        "unlimitedAI": "Unlimited AI"
+    }
+}

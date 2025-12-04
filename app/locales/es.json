@@ -1,0 +1,51 @@
+{
+    "common": {
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "delete": "Eliminar",
+        "edit": "Editar",
+        "create": "Crear",
+        "search": "Buscar",
+        "loading": "Cargando...",
+        "error": "Error",
+        "success": "Éxito"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "documents": "Documentos",
+        "chats": "Chats",
+        "users": "Usuarios",
+        "config": "Configuración",
+        "logout": "Cerrar sesión"
+    },
+    "config": {
+        "title": "Configuración",
+        "subtitle": "Gestiona tu cuenta y preferencias del sistema",
+        "profileInfo": "Información del Perfil",
+        "updatePersonalInfo": "Actualiza tu información personal",
+        "username": "Nombre de usuario",
+        "email": "Correo electrónico",
+        "saveChanges": "Guardar cambios",
+        "preferences": "Preferencias",
+        "customizeExperience": "Personaliza tu experiencia",
+        "darkMode": "Modo oscuro",
+        "darkModeDesc": "Cambia entre tema claro y oscuro",
+        "language": "Idioma",
+        "languageDesc": "Selecciona tu idioma preferido",
+        "integrations": "Integraciones",
+        "connectServices": "Conecta servicios externos",
+        "googleDrive": "Google Drive",
+        "importFromDrive": "Importa documentos desde Drive",
+        "connected": "Conectado",
+        "apiKey": "API Key",
+        "externalIntegration": "Integración con sistemas externos",
+        "generate": "Generar",
+        "security": "Seguridad",
+        "changePassword": "Cambiar contraseña",
+        "currentPlan": "Plan Actual",
+        "professionalPlan": "Plan Profesional",
+        "upgradePlan": "Mejorar plan",
+        "documentsPerMonth": "documentos/mes",
+        "unlimitedAI": "IA ilimitada"
+    }
+}

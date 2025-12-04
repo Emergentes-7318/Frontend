@@ -1,7 +1,14 @@
 @import "tailwindcss";
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+/* Dark mode variables */
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
 }
 
 @theme inline {
@@ -11,15 +18,77 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode styles */
+.dark {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.dark aside {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark .bg-white {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #334155 !important;
+}
+
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-blue-950 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: #cbd5e1 !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #334155 !important;
+}
+
+.dark .bg-blue-50 {
+  background-color: #1e3a8a !important;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+.dark .p-inputtext,
+.dark .p-dropdown {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+.dark .p-dropdown-panel {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .p-dropdown-item {
+  color: #f1f5f9 !important;
+}
+
+.dark .p-dropdown-item:hover {
+  background-color: #334155 !important;
 }
