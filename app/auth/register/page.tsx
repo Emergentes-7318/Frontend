@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
+import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { RegisterDto } from '@/app/types/auth';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
@@ -13,11 +14,17 @@ export default function RegisterPage() {
     const router = useRouter();
     const toast = React.useRef<Toast>(null);
 
-    const [formData, setFormData] = useState<RegisterDto>({
+    const [formData, setFormData] = useState<RegisterDto & { role: string }>({
         username: '',
         email: '',
-        password: ''
+        password: '',
+        role: 'empleado'
     });
+
+    const roleOptions = [
+        { label: 'Empleado', value: 'empleado' },
+        { label: 'Administrador', value: 'admin' }
+    ];
     const [loading, setLoading] = useState(false);
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -150,6 +157,26 @@ export default function RegisterPage() {
                                     required
                                     className="w-full"
                                     inputClassName="w-full pl-10 p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Role Selection */}
+                        <div>
+                            <label htmlFor="role" className="block text-sm font-semibold text-gray-700 mb-2">
+                                Tipo de usuario
+                            </label>
+                            <div className="p-inputgroup">
+                                <span className="p-inputgroup-addon bg-blue-50">
+                                    <i className="pi pi-shield text-blue-600"></i>
+                                </span>
+                                <Dropdown
+                                    id="role"
+                                    value={formData.role}
+                                    options={roleOptions}
+                                    onChange={(e) => setFormData({ ...formData, role: e.value })}
+                                    placeholder="Selecciona tu rol"
+                                    className="w-full"
                                 />
                             </div>
                         </div>

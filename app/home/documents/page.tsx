@@ -13,6 +13,8 @@ import { DocumentViewer } from "@/app/components/DocumentViewer";
 import { Toast } from "primereact/toast";
 import DrivePicker from "@/app/components/DrivePicker";
 import { useDocuments } from "@/app/hooks/useDocuments";
+import { useUsers } from "@/app/hooks/useUsers";
+import { useAuth } from "@/app/context/AuthContext";
 import { Document } from "@/app/types/document";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
@@ -20,7 +22,9 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 function DocumentPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const { documents, loading, uploading, error, refetch, updateDocument, deleteDocument, uploadFile } = useDocuments();
+    const { getUsernameById } = useUsers();
 
     const [viewerVisible, setViewerVisible] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
@@ -172,12 +176,30 @@ function DocumentPage() {
     };
 
     const dateBodyTemplate = (rowData: Document) => {
-        const date = new Date(rowData.created_at);
-        return date.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
+        return new Date(rowData.created_at).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
         });
+    };
+
+    const userBodyTemplate = (rowData: Document) => {
+        const username = getUsernameById(rowData.user_id);
+        const isCurrentUser = user && user.id === rowData.user_id;
+
+        if (isCurrentUser) {
+            return (
+                <div className="flex items-center gap-2">
+                    <Tag value={username} severity="info" />
+                </div>
+            );
+        }
+        // Show username for other users
+        return (
+            <span className="text-gray-600 text-sm">
+                {username}
+            </span>
+        );
     };
 
     return (
@@ -244,7 +266,7 @@ function DocumentPage() {
                     <DataTable value={documents} className="p-datatable-sm" stripedRows>
                         <Column field="filename" header="Nombre del documento" />
                         <Column body={dateBodyTemplate} header="Fecha de subida" />
-                        <Column field="user_id" header="Subido por" />
+                        <Column body={userBodyTemplate} header="Subido por" />
                         <Column body={actionBodyTemplate} header="Acciones" style={{ width: '250px' }} />
                     </DataTable>
                 )}

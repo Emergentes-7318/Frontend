@@ -12,11 +12,11 @@ const Sidebar = () => {
     const { user, logout } = useAuth();
 
     const sidebarItems = [
-        { label: "Dashboard", path: "/home/dashboard", icon: "pi-home" },
-        { label: "Documentos", path: "/home/documents", icon: "pi-file" },
-        { label: "Chats", path: "/home/chats", icon: "pi-comments" },
-        { label: "Reportes", path: "/home/reports", icon: "pi-chart-bar" },
-        { label: "Configuración", path: "/home/config", icon: "pi-cog" },
+        { label: "Dashboard", path: "/home/dashboard", icon: "pi-home", adminOnly: false },
+        { label: "Documentos", path: "/home/documents", icon: "pi-file", adminOnly: false },
+        { label: "Chats", path: "/home/chats", icon: "pi-comments", adminOnly: false },
+        { label: "Usuarios", path: "/home/users", icon: "pi-users", adminOnly: true },
+        { label: "Configuración", path: "/home/config", icon: "pi-cog", adminOnly: false },
     ];
 
     const handleLogout = () => {
@@ -56,6 +56,11 @@ const Sidebar = () => {
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-gray-800 truncate">{user.username}</p>
                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                {user.role === 'admin' && (
+                                    <span className="inline-block mt-1 px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded">
+                                        Admin
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -63,24 +68,26 @@ const Sidebar = () => {
 
                 {/* Navigation */}
                 <nav className="flex-1 flex flex-col gap-2 mt-8">
-                    {sidebarItems.map((item, index) => {
-                        const isActive = pathname === item.path;
+                    {sidebarItems
+                        .filter(item => !item.adminOnly || (user && user.role === 'admin'))
+                        .map((item, index) => {
+                            const isActive = pathname === item.path;
 
-                        return (
-                            <Link
-                                key={index}
-                                href={item.path}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                                    ${isActive ? "bg-blue-900 text-white" : "text-gray-700 hover:bg-blue-50 hover:text-blue-900"}
-                                    ${collapsed ? 'justify-center' : ''}
-                                `}
-                                title={collapsed ? item.label : ''}
-                            >
-                                <i className={`pi ${item.icon}`} style={{ fontSize: "1.5rem" }} />
-                                {!collapsed && <span className="text-lg">{item.label}</span>}
-                            </Link>
-                        );
-                    })}
+                            return (
+                                <Link
+                                    key={index}
+                                    href={item.path}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all
+                                        ${isActive ? "bg-blue-900 text-white" : "text-gray-700 hover:bg-blue-50 hover:text-blue-900"}
+                                        ${collapsed ? 'justify-center' : ''}
+                                    `}
+                                    title={collapsed ? item.label : ''}
+                                >
+                                    <i className={`pi ${item.icon}`} style={{ fontSize: "1.5rem" }} />
+                                    {!collapsed && <span className="text-lg">{item.label}</span>}
+                                </Link>
+                            );
+                        })}
                 </nav>
 
                 {/* Logout button */}

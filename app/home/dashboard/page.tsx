@@ -4,13 +4,22 @@ import { Card } from "primereact/card";
 import { Chart } from "primereact/chart";
 import { Tag } from "primereact/tag";
 import { useDocuments } from "@/app/hooks/useDocuments";
+import { useUsers } from "@/app/hooks/useUsers";
+import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import 'primeicons/primeicons.css';
 
 export default function DashboardPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const { documents, loading } = useDocuments();
+    const { getUsernameById, loading: usersLoading } = useUsers();
+
+    // Helper function to display user name
+    const getUserDisplay = (userId: string) => {
+        return getUsernameById(userId);
+    };
 
     // Calcular documentos por usuario
     const documentsByUser = useMemo(() => {
@@ -25,9 +34,10 @@ export default function DashboardPage() {
     const chartData = useMemo(() => {
         const users = Object.keys(documentsByUser);
         const counts = Object.values(documentsByUser);
+        const userLabels = users.map(userId => getUserDisplay(userId));
 
         return {
-            labels: users,
+            labels: userLabels,
             datasets: [
                 {
                     label: 'Documentos subidos',

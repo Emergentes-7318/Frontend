@@ -4,12 +4,16 @@ import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { useDocuments } from "@/app/hooks/useDocuments";
+import { useUsers } from "@/app/hooks/useUsers";
+import { useAuth } from "@/app/context/AuthContext";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import 'primeicons/primeicons.css';
 
 export default function ChatsListPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const { documents, loading, error } = useDocuments();
+    const { getUsernameById } = useUsers();
     const toast = React.useRef<Toast>(null);
 
     return (
@@ -93,7 +97,7 @@ export default function ChatsListPage() {
                                     <div className="flex flex-col items-end gap-3">
                                         <div className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
                                             <i className="pi pi-user text-xs mr-1"></i>
-                                            {doc.user_id}
+                                            {getUsernameById(doc.user_id)}
                                         </div>
                                         <div className="text-xs text-gray-400">
                                             <i className="pi pi-arrow-right mr-1"></i>
