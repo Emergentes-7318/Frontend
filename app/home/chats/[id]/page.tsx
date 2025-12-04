@@ -47,7 +47,24 @@ export default function ChatPage() {
     useEffect(() => {
         const fetchDocument = async () => {
             try {
-                const response = await fetch(`${apiUrl}/documents/${documentId}`);
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                const response = await fetch(`${apiUrl}/documents/${documentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user');
+                    router.push('/auth/login');
+                    return;
+                }
 
                 if (!response.ok) {
                     throw new Error('Error al cargar el documento');
@@ -80,11 +97,17 @@ export default function ChatPage() {
         if (documentId) {
             fetchDocument();
         }
-    }, [documentId, apiUrl]);
+    }, [documentId, apiUrl, router]);
 
     // Send message to chat endpoint
     const handleSendMessage = async () => {
         if (!inputMessage.trim() || sending) return;
+
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            router.push('/auth/login');
+            return;
+        }
 
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -102,6 +125,7 @@ export default function ChatPage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     question: inputMessage,

@@ -32,7 +32,24 @@ export default function DocumentAnalyzePage() {
     useEffect(() => {
         const fetchDocument = async () => {
             try {
-                const response = await fetch(`${apiUrl}/documents/${documentId}`);
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                const response = await fetch(`${apiUrl}/documents/${documentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user');
+                    router.push('/auth/login');
+                    return;
+                }
 
                 if (!response.ok) {
                     throw new Error('Error al cargar el documento');
@@ -57,7 +74,7 @@ export default function DocumentAnalyzePage() {
         if (documentId) {
             fetchDocument();
         }
-    }, [documentId, apiUrl]);
+    }, [documentId, apiUrl, router]);
 
     // Manual analysis trigger
     const handleAnalyze = async () => {
@@ -65,10 +82,17 @@ export default function DocumentAnalyzePage() {
         setError(null);
 
         try {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                router.push('/auth/login');
+                return;
+            }
+
             const response = await fetch(`${apiUrl}/documents/${documentId}/analyze`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     record: {
@@ -78,6 +102,13 @@ export default function DocumentAnalyzePage() {
                     }
                 })
             });
+
+            if (response.status === 401) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user');
+                router.push('/auth/login');
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error('Error al analizar el documento');

@@ -29,14 +29,23 @@ export default function DrivePicker() {
         console.log('   - Token:', oauthToken ? 'PRESENTE (Oculto)' : 'FALTANTE');
 
         try {
+            // Get JWT token for backend authentication
+            const jwtToken = localStorage.getItem('access_token');
+            if (!jwtToken) {
+                alert('⚠️ Sesión expirada. Por favor inicia sesión de nuevo.');
+                window.location.href = '/auth/login';
+                return;
+            }
+
             // OJO: Ajustado a puerto 4000 por si el .env falla, ya que moviste el backend
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
             console.log('📡 Conectando al Backend en:', `${apiUrl}/documents/upload-drive`);
 
             const response = await fetch(`${apiUrl}/documents/upload-drive`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`
                 },
                 body: JSON.stringify({
                     fileId,
@@ -45,6 +54,14 @@ export default function DrivePicker() {
             });
 
             console.log('📥 Respuesta del servidor status:', response.status);
+
+            if (response.status === 401) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user');
+                alert('⚠️ Sesión expirada. Por favor inicia sesión de nuevo.');
+                window.location.href = '/auth/login';
+                return;
+            }
 
             if (!response.ok) {
                 const errorText = await response.text();

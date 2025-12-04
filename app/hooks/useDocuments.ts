@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Document, UpdateDocumentDto } from '@/app/types/document';
 
 interface UseDocumentsReturn {
@@ -13,6 +14,7 @@ interface UseDocumentsReturn {
 }
 
 export function useDocuments(): UseDocumentsReturn {
+    const router = useRouter();
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -20,12 +22,47 @@ export function useDocuments(): UseDocumentsReturn {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            router.push('/auth/login');
+            throw new Error('No authentication token found');
+        }
+        return {
+            'Authorization': `Bearer ${token}`
+        };
+    };
+
+    const handleAuthError = (status: number) => {
+        if (status === 401) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user');
+            router.push('/auth/login');
+        }
+    };
+
     const fetchDocuments = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const response = await fetch(`${apiUrl}/documents`);
+            const token = localStorage.getItem('access_token');
+            // If no token, don't fetch and let ProtectedRoute handle redirect
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+
+            const response = await fetch(`${apiUrl}/documents`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401) {
+                handleAuthError(401);
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error(`Error fetching documents: ${response.status}`);
@@ -46,17 +83,24 @@ export function useDocuments(): UseDocumentsReturn {
         } finally {
             setLoading(false);
         }
-    }, [apiUrl]);
+    }, [apiUrl, router]);
 
     const updateDocument = async (id: string, data: UpdateDocumentDto) => {
         try {
+            const headers = getAuthHeaders();
             const response = await fetch(`${apiUrl}/documents/${id}`, {
                 method: 'PATCH',
                 headers: {
+                    ...headers,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data),
             });
+
+            if (response.status === 401) {
+                handleAuthError(401);
+                throw new Error('Unauthorized');
+            }
 
             if (!response.ok) {
                 throw new Error(`Error updating document: ${response.status}`);
@@ -73,9 +117,16 @@ export function useDocuments(): UseDocumentsReturn {
 
     const deleteDocument = async (id: string) => {
         try {
+            const headers = getAuthHeaders();
             const response = await fetch(`${apiUrl}/documents/${id}`, {
                 method: 'DELETE',
+                headers: headers
             });
+
+            if (response.status === 401) {
+                handleAuthError(401);
+                throw new Error('Unauthorized');
+            }
 
             if (!response.ok) {
                 throw new Error(`Error deleting document: ${response.status}`);
@@ -94,14 +145,20 @@ export function useDocuments(): UseDocumentsReturn {
         setUploading(true);
 
         try {
+            const headers = getAuthHeaders();
             const formData = new FormData();
             formData.append('file', file);
 
             const response = await fetch(`${apiUrl}/documents/upload`, {
                 method: 'POST',
+                headers: headers, // Only auth header, NO Content-Type for FormData
                 body: formData,
-                // DO NOT set Content-Type header - browser will set it automatically with boundary
             });
+
+            if (response.status === 401) {
+                handleAuthError(401);
+                throw new Error('Unauthorized');
+            }
 
             if (!response.ok) {
                 const errorText = await response.text();

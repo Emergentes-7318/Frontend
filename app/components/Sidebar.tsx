@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, logout } = useAuth();
 
     const sidebarItems = [
         { label: "Dashboard", path: "/home/dashboard", icon: "pi-home" },
@@ -15,6 +18,11 @@ const Sidebar = () => {
         { label: "Reportes", path: "/home/reports", icon: "pi-chart-bar" },
         { label: "Configuración", path: "/home/config", icon: "pi-cog" },
     ];
+
+    const handleLogout = () => {
+        logout();
+        router.push('/auth/login');
+    };
 
     return (
         <>
@@ -27,7 +35,7 @@ const Sidebar = () => {
             )}
 
             <aside className={`
-                fixed top-0 left-0 h-screen bg-white shadow-lg p-4 z-50 transition-all duration-300
+                fixed top-0 left-0 h-screen bg-white shadow-lg p-4 z-50 transition-all duration-300 flex flex-col
                 ${collapsed ? 'w-16' : 'w-64'}
             `}>
                 {/* Toggle button */}
@@ -38,7 +46,23 @@ const Sidebar = () => {
                     <i className={`pi ${collapsed ? 'pi-angle-right' : 'pi-angle-left'}`} />
                 </button>
 
-                <nav className="flex flex-col gap-2 mt-8">
+                {/* User info */}
+                {!collapsed && user && (
+                    <div className="mb-6 pb-4 border-b border-gray-200">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">
+                                {user.username.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-gray-800 truncate">{user.username}</p>
+                                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Navigation */}
+                <nav className="flex-1 flex flex-col gap-2 mt-8">
                     {sidebarItems.map((item, index) => {
                         const isActive = pathname === item.path;
 
@@ -58,6 +82,18 @@ const Sidebar = () => {
                         );
                     })}
                 </nav>
+
+                {/* Logout button */}
+                <button
+                    onClick={handleLogout}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-red-600 hover:bg-red-50 mt-auto
+                        ${collapsed ? 'justify-center' : ''}
+                    `}
+                    title={collapsed ? 'Cerrar sesión' : ''}
+                >
+                    <i className="pi pi-sign-out" style={{ fontSize: "1.5rem" }} />
+                    {!collapsed && <span className="text-lg">Cerrar sesión</span>}
+                </button>
             </aside>
         </>
     );
